@@ -1,8 +1,9 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdbool.h>
+#include <stdlib.h>
 
-/**
+/*
  * @author Filip Masarik
  */
 
@@ -45,19 +46,48 @@ void V1(FILE **dataFile, FILE **stringFile, FILE **parseFile)
     rewind(*parseFile);
 }
 
-void N(FILE ***dataFile, FILE ***stringFile, FILE ***parseFile)
+void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *lines)
 {
-    int lines = 0;
+    for (int i = 0; i < *lines; i++)
+    {
+        printf("ID. met. modulu %s", (*stringFileArr)[i]);
 
+        int a,b,c; 
+        double d;
+        sscanf((*dataFileArr)[i],"%d %d %d %lf",&a,&b, &c,&d);
+        printf("Hodnota 1: %d \n", c);
+        printf("Hodnota 2: %g \n", d);
+        printf("Poznámka %s \n", (*parseFileArr)[i]);
+    }
+}
+
+void N(FILE **dataFile, FILE **stringFile, FILE **parseFile, char*** dataFileArr, char*** stringFileArr, char*** parseFileArr, int *lines)
+{
     char c;
-    for (c = getc(dataFile); c != EOF; c = getc(dataFile))
+    *lines = 0;
+    for (c = getc(*dataFile); c != EOF; c = getc(*dataFile))
     {
         if (c == '\n')
         {
-            lines = lines + 1;  
+            *lines = *lines + 1;  
         }
-    }        
-    dataFile = (char **)malloc(lines * sizeof(char *));
+    }
+    rewind(*dataFile);
+    rewind(*stringFile);
+    rewind(*parseFile);
+    
+    *dataFileArr = (char **)malloc(*lines * sizeof(char *));
+    *stringFileArr = (char **)malloc(*lines * sizeof(char *));
+    *parseFileArr = (char **)malloc(*lines * sizeof(char *));
+    for(int i = 0; i < *lines; i++)
+    {
+        (*dataFileArr)[i] = (char *)malloc(100 * sizeof(char));
+        fgets((*dataFileArr)[i], 100, *dataFile);
+        (*stringFileArr)[i] = (char *)malloc(100 * sizeof(char));
+        fgets((*stringFileArr)[i], 100, *stringFile);
+        (*parseFileArr)[i] = (char *)malloc(100 * sizeof(char));
+        fgets((*parseFileArr)[i], 100, *parseFile);
+    }
 }
 
 void histogram(FILE **stringFile)
@@ -140,7 +170,7 @@ int main()
     bool opened = false;
     bool nActivated = false;
 
-   //those stupid fucking arrays
+    int lines = 0;
     char **dataFileArr;
     char **stringFileArr;
     char **parseFileArr;
@@ -183,9 +213,9 @@ int main()
                     continue;
                 }
 
-                printf("Este nie je hotove\n");
+                V2(&dataFileArr, &stringFileArr, &parseFileArr, &lines);
             }
-            else if (inputNum > 2 && inputNum <= 3)
+            else if (inputNum == 3)
             {
                 printf("Este nie je hotove\n");
             }
@@ -201,15 +231,15 @@ int main()
                 printf("H: Neotvoreny subor.\n");
                 continue;
             }
-            printf("Histogram\n");
+            printf("Histogram:\n");
             histogram(&stringFile);
         }
         else if(input == 'n' || input == 'N')
         {
             if(!opened) { printf("N: Neotvoreny subor.\n"); }
 
-            N(&dataFile, &stringFile, &parseFile);
-
+            N(&dataFile, &stringFile, &parseFile, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
+            nActivated = true;
         } 
         else if (input == 'x' || input == 'x')
         {
