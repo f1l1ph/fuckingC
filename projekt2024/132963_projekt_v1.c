@@ -51,6 +51,7 @@ void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *l
 {
     for (int i = 0; i < *lines; i++)
     {
+        (*stringFileArr)[i][strcspn((*stringFileArr)[i], "\n")] = '\0';
         printf("ID. met. modulu %s\n", (*stringFileArr)[i]);
 
         int a,b,c; 
@@ -199,42 +200,33 @@ void h(FILE **stringFile)
     char cisla[10];
     int cislaCount[10] = {0};
     int i = 0;
+    char c;
+
     for ( i = 0; i < 26; i++)
     {
         velkePismena[i] = 'A' + i;
-    }
-    for ( i = 0; i < 26; i++)
-    {
         malePismena[i] = 'a' + i;
-    }
-    for ( i = 0; i < 10; i++)
-    {
-        cisla[i] = '0' + i;
+        if(i < 10)
+        {
+            cisla[i] = '0' + i;
+        }
     }
 
-    char c;
     while ((c = fgetc(*stringFile)) != EOF)
     {
-        for (int i = 0; i < 26; i++)
+        switch (c)
         {
-            if (c == malePismena[i])
-            {
-                malePismenaCount[i]++;
-                continue;
-            }
-            if(c == velkePismena[i])
-            {
-                velkePismenaCount[i]++;
-                continue;
-            }
-        }
-        for (int i = 0; i < 10; i++)
-        {
-            if (c == cisla[i])
-            {
-                cislaCount[i]++;
-                continue;
-            }
+            case 'a' ... 'z':
+                malePismenaCount[c - 'a']++;
+                break;
+            case 'A' ... 'Z':
+                velkePismenaCount[c - 'A']++;
+                break;
+            case '0' ... '9':
+                cislaCount[c - '0']++;
+                break;
+            default:
+                break;
         }
     }
     for( i = 0; i < 26; i++)
@@ -336,8 +328,11 @@ int main()
         }
         else if(input == 'n' || input == 'N')
         {
-            if(!opened) { printf("N: Neotvoreny subor.\n"); continue; }
-
+            if(!opened) 
+            { 
+                printf("N: Neotvoreny subor.\n"); 
+                continue; 
+            }
             N(&dataFile, &stringFile, &parseFile, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
             nActivated = true;
         }
@@ -350,7 +345,6 @@ int main()
             }
             int qNum;
             scanf("%d", &qNum);
-
             q(qNum, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
         }
         else if(input == 'w' || input == 'W')
@@ -360,7 +354,6 @@ int main()
                 printf("W: Polia nie su vytvorene\n");
                 continue;
             }
-
             char idToDelete[100];
             scanf("%s", idToDelete);
             w(idToDelete, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
