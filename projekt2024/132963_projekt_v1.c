@@ -373,12 +373,11 @@ int main()
                 printf("E: Polia nie su vytvorene\n");
                 continue;
             }
-
             char findMe[100];
             scanf("%s", findMe);
             e(findMe, &parseFileArr, &lines);
         }
-        else if (input == 'x' || input == 'X')
+        else if(input == 'x' || input == 'X')//@Note: I added this so you can exit the program
         {
             exit = true;
             printf("Koniec programu\n");
