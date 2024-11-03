@@ -35,7 +35,6 @@ void V1(FILE **dataFile, FILE **stringFile, FILE **parseFile)
     {
         printf("ID. met. modulu %s", stringFileCharArr);
 
-        int spacesCount = 0;
         sscanf(dataFileCharArr,"%d %d %d %lf",&a,&b, &c,&d);
         printf("Hodnota 1: %d \n", c);
         printf("Hodnota 2: %g \n", d);
@@ -49,13 +48,14 @@ void V1(FILE **dataFile, FILE **stringFile, FILE **parseFile)
 
 void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *lines)
 {
-    for (int i = 0; i < *lines; i++)
+    int a,b,c; 
+    double d;
+    int i = 0;
+    for (i = 0; i < *lines; i++)
     {
         (*stringFileArr)[i][strcspn((*stringFileArr)[i], "\n")] = '\0';
         printf("ID. met. modulu %s\n", (*stringFileArr)[i]);
 
-        int a,b,c; 
-        double d;
         sscanf((*dataFileArr)[i],"%d %d %d %lf",&a,&b, &c,&d);
         printf("Hodnota 1: %d \n", c);
         printf("Hodnota 2: %g \n", d);
@@ -66,6 +66,7 @@ void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *l
 void N(FILE **dataFile, FILE **stringFile, FILE **parseFile, char*** dataFileArr, char*** stringFileArr, char*** parseFileArr, int *lines)
 {
     char c;
+    int i = 0;
     *lines = 0;
     for (c = getc(*dataFile); c != EOF; c = getc(*dataFile))
     {
@@ -81,7 +82,7 @@ void N(FILE **dataFile, FILE **stringFile, FILE **parseFile, char*** dataFileArr
     *dataFileArr = (char **)malloc(*lines * sizeof(char *));
     *stringFileArr = (char **)malloc(*lines * sizeof(char *));
     *parseFileArr = (char **)malloc(*lines * sizeof(char *));
-    for(int i = 0; i < *lines; i++)
+    for(i = 0; i < *lines; i++)
     {
         (*dataFileArr)[i] = (char *)malloc(100 * sizeof(char));
         fgets((*dataFileArr)[i], 100, *dataFile);
@@ -99,12 +100,13 @@ void N(FILE **dataFile, FILE **stringFile, FILE **parseFile, char*** dataFileArr
 
 void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *lines)
 {
-    Y = Y - 1;
-
     int i1, a, b, c;
     double d;
     char s1[100];
     char s2[100];
+
+    Y = Y - 1;
+
 
     scanf("%s", s1);                        //string.txt
     scanf("%d %d %d %lf", &a, &b, &c, &d);  //data.txt
@@ -272,14 +274,14 @@ int main()
 
     bool exit = false;
 
+    char findMe[100];
+
+
     while (exit == false)
     {
         scanf("%c", &input);
 
-        if(input == '\n')
-        {
-            scanf("%c", &input);
-        }
+        if(input == '\n'){ scanf("%c", &input); }
 
         if (input == 'v' || input == 'V')
         {
@@ -365,7 +367,6 @@ int main()
                 printf("E: Polia nie su vytvorene\n");
                 continue;
             }
-            char findMe[100];
             scanf("%s", findMe);
             e(findMe, &parseFileArr, &lines);
         }
