@@ -107,10 +107,9 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
 
     Y = Y - 1;
 
-
     scanf("%s", s1);                        //string.txt
     scanf("%d %d %d %lf", &a, &b, &c, &d);  //data.txt
-    scanf("%s", s2);                        //parse.txt
+    scanf(" %[^\n]", s2);                        //parse.txt
 
     if(Y > *lines)
     {
@@ -180,7 +179,7 @@ void w(char ToDelete[], char ***dataFileArr, char ***stringFileArr, char ***pars
             deleted += 1;
         }
     }
-    printf("W: Vymazalo sa : %d zaznamov! \n", deleted);
+    printf("W: Vymazalo sa : %d zaznamov ! \n", deleted);
 }
 
 void e(char findMe[] ,char ***parseFileArr, int *lines)
@@ -276,7 +275,7 @@ int main()
     char idToDelete[100];
 
     bool exit = false;
-
+    int i = 0;
     char findMe[100];
 
     while (exit == false)
@@ -305,7 +304,7 @@ int main()
             {
                 if(!nActivated)
                 {
-                    printf("V2: nenaplnené polia\n");
+                    printf("V2: Nenaplnene polia.\n");
                     continue;
                 }
 
@@ -344,7 +343,7 @@ int main()
         {
             if(!nActivated)
             {
-                printf("Q: Polia nie su vytvorene\n");
+                printf("Q: Polia nie su vytvorene.\n");
                 continue;
             }
             scanf("%d", &qNum);
@@ -374,6 +373,33 @@ int main()
         {
             exit = true;
             printf("Koniec programu\n");
+        }
+        else if(input =='k' || input == 'K')
+        {
+            if(!opened)
+            {
+                //printf("K: Neotvoreny subor.\n");
+                continue;
+            }
+            fclose(dataFile);
+            fclose(stringFile);
+            fclose(parseFile);
+            opened = false;
+            if(nActivated)
+            {
+                for(i = 0; i < lines; i++)
+                {
+                    free(dataFileArr[i]);
+                    free(stringFileArr[i]);
+                    free(parseFileArr[i]);
+                }
+                free(dataFileArr);
+                free(stringFileArr);
+                free(parseFileArr);
+                nActivated = false;
+                lines = 0;
+            }
+            return 0;
         }
         else
         {
