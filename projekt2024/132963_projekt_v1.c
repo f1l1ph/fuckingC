@@ -33,12 +33,12 @@ void V1(FILE **dataFile, FILE **stringFile, FILE **parseFile)
            fgets(dataFileCharArr, 100, *dataFile) != NULL &&
            fgets(parseFileCharArr, 100, *parseFile) != NULL)
     {
-        printf("ID. met. modulu %s", stringFileCharArr);
+        printf("ID. mer. modulu: %s", stringFileCharArr);
 
         sscanf(dataFileCharArr,"%d %d %d %lf",&a,&b, &c,&d);
         printf("Hodnota 1: %d \n", c);
         printf("Hodnota 2: %g \n", d);
-        printf("Poznámka %s \n", parseFileCharArr);
+        printf("Poznámka: %s \n", parseFileCharArr);
     }
 
     rewind(*dataFile);
@@ -54,12 +54,12 @@ void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *l
     for (i = 0; i < *lines; i++)
     {
         (*stringFileArr)[i][strcspn((*stringFileArr)[i], "\n")] = '\0';
-        printf("ID. met. modulu %s\n", (*stringFileArr)[i]);
+        printf("ID. mer. modulu: %s\n", (*stringFileArr)[i]);
 
         sscanf((*dataFileArr)[i],"%d %d %d %lf",&a,&b, &c,&d);
         printf("Hodnota 1: %d \n", c);
         printf("Hodnota 2: %g \n", d);
-        printf("Poznámka %s \n\n", (*parseFileArr)[i]);
+        printf("Poznámka: %s \n\n", (*parseFileArr)[i]);
     }
 }
 
@@ -166,16 +166,17 @@ void w(char ToDelete[], char ***dataFileArr, char ***stringFileArr, char ***pars
     {
         if(strcmp((*stringFileArr)[i], ToDelete) == 0)
         {
+            free((*dataFileArr)[i]);
+            free((*stringFileArr)[i]);
+            free((*parseFileArr)[i]);
             for(int j = i; j < *lines - 1; j++)
             {
-                sprintf((*dataFileArr)[j], "%s", (*dataFileArr)[j + 1]);
-                sprintf((*stringFileArr)[j], "%s", (*stringFileArr)[j + 1]);
-                sprintf((*parseFileArr)[j], "%s", (*parseFileArr)[j + 1]);
+                (*dataFileArr)[j] = (*dataFileArr)[j + 1];
+                (*stringFileArr)[j] = (*stringFileArr)[j + 1];
+                (*parseFileArr)[j] = (*parseFileArr)[j + 1];
             }
+            i--; 
             *lines = *lines - 1;
-            *dataFileArr = (char **)realloc(*dataFileArr, *lines * sizeof(char *));
-            *stringFileArr = (char **)realloc(*stringFileArr, *lines * sizeof(char *));
-            *parseFileArr = (char **)realloc(*parseFileArr, *lines * sizeof(char *));
             deleted += 1;
         }
     }
@@ -271,11 +272,12 @@ int main()
 
     char input;
     int inputNum;
+    int qNum;
+    char idToDelete[100];
 
     bool exit = false;
 
     char findMe[100];
-
 
     while (exit == false)
     {
@@ -345,7 +347,6 @@ int main()
                 printf("Q: Polia nie su vytvorene\n");
                 continue;
             }
-            int qNum;
             scanf("%d", &qNum);
             q(qNum, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
         }
@@ -356,7 +357,6 @@ int main()
                 printf("W: Polia nie su vytvorene\n");
                 continue;
             }
-            char idToDelete[100];
             scanf("%s", idToDelete);
             w(idToDelete, &dataFileArr, &stringFileArr, &parseFileArr, &lines);
         }
