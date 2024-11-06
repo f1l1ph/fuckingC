@@ -47,12 +47,13 @@ void UPRAVA2(int *pole_dataR[], char ***outputArray)
 
 void VYPIS2(char **outputArray)
 {
+	int i = 0;
+
 	if(outputArray == NULL)
 	{
 		printf("Prazdne pole.\n");
 		return;
 	}
-	int i = 0;
 	for(i = 0; i < Pocet_Zaznamov; i++)
 	{
 		printf("%s - %d\n", outputArray[i], i);
@@ -61,15 +62,16 @@ void VYPIS2(char **outputArray)
 
 void ZORAD(int *pole_dataR[])
 {
+	int i = 0;
+	int j = 0;
+	int *temp = 0;
+
 	if(pole_dataR == NULL)
 	{
 		printf("Prazdne pole.\n");
 		return;
 	}
-
-	int i = 0;
-	int j = 0;
-	int *temp = 0;
+	
 	for(i = 0; i < Pocet_Zaznamov; i++)
 	{
 		for(j = 0; j < Pocet_Zaznamov; j++)
@@ -108,7 +110,6 @@ int main() {
 
 	/* vypis */
 	/*  vase riesenia / your solution   */
-
 	char **outputArray = NULL;//pole do ktoreho sa to uklada
 
 	UPRAVA2(pole_dataR, &outputArray);
