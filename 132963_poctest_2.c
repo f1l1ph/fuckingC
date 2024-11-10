@@ -2,7 +2,10 @@
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
-
+/**
+ * @author: Filip Masarik
+ * @id: 132963
+ */
 #define Pocet_Zaznamov 15 /*  nemenit  */ 
 
 void UPRAVA2(int *pole_dataR[], char ***outputArray)
@@ -16,7 +19,7 @@ void UPRAVA2(int *pole_dataR[], char ***outputArray)
 
 	if (*outputArray == NULL || pole_dataR == NULL || Pocet_Zaznamov <= 0)  {
 		printf("Chyba.\n");
-		return;  // Return error code
+		return;
 	}
 
 	for(i = 0; i < Pocet_Zaznamov; i++)
@@ -39,7 +42,6 @@ void UPRAVA2(int *pole_dataR[], char ***outputArray)
 				sprintf(temp, "%c", pole_dataR[i][j]);
 				strcat(finalStr, temp);
 			}
-			
 		}
 		strcpy((*outputArray)[i], finalStr);
 	}
@@ -58,6 +60,7 @@ void VYPIS2(char **outputArray)
 	{
 		printf("%s - %d\n", outputArray[i], i);
 	}
+	printf("\n");
 }
 
 void ZORAD(int *pole_dataR[])
@@ -95,12 +98,12 @@ void ZORAD(int *pole_dataR[])
 int main() {
 	int** pole_dataR = NULL;
   
-	int i = 0, j = 0;
+	int i = 0;
         srand(time(NULL));
 
         if(Pocet_Zaznamov != 0){ 
            pole_dataR = (int **)malloc(Pocet_Zaznamov * sizeof(int*));
-    	   for (i = 0, j = 0; i < Pocet_Zaznamov; i++) {
+    	   for (i = 0; i < Pocet_Zaznamov; i++) {
     	           pole_dataR[i]=(int*)malloc(3 * sizeof(int));
                    pole_dataR[i][0] = rand() %1000;
                    pole_dataR[i][1] = 'a' + ( rand() % ('z'-'a'+1));
@@ -125,5 +128,9 @@ int main() {
 	free(pole_dataR);
         pole_dataR = NULL;
 
+	for (i = 0; i < Pocet_Zaznamov; i++) {
+		free(*(outputArray + i));
+		*(outputArray + i) = NULL;
+	}
 	return 0;
 }
