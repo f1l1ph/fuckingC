@@ -19,7 +19,7 @@ struct data
 
 struct parse
 {
-    // char *Poznamka_ID;
+    char Poznamka_ID[10];
     int Poznamka_N1;
     int Poznamka_Hodina;
     int Poznamka_Minuta;
@@ -332,10 +332,13 @@ void m(FILE **dataFile, FILE **parseFile, struct linkedList **head, int *lines, 
     int i = 0;
 
     struct linkedList *temp = *head;
-    struct linkedList *newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
+    struct linkedList *newNode;
 
     struct data dataList;
     struct parse parseList;
+
+    char dataLine[100];
+    char parseLine[100];
     setLines(dataFile, lines);
 
     if (linkedListed)
@@ -345,50 +348,55 @@ void m(FILE **dataFile, FILE **parseFile, struct linkedList **head, int *lines, 
 
     for (i = 0; i < *lines; i++)
     {
-        struct linkedList *newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
+        memset(dataLine, 0, sizeof(dataLine));
+        memset(parseLine, 0, sizeof(parseLine));
+
+        newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
         if (newNode == NULL)
         {
             printf("M: Nepodarilo sa alokovat pamat\n");
             return;
         }
-        char dataLine[100];
-        char parseLine[100];
 
-        // Read from data file
-        if (fgets(dataLine, sizeof(dataLine), *dataFile) == NULL)
+        // read from Files
+        fgets(dataLine, sizeof(dataLine), *dataFile);
+        fgets(parseLine, sizeof(parseLine), *parseFile);
+        if (dataLine == NULL || parseLine == NULL)
         {
             free(newNode);
-            printf("M: Nepodarilo sa nacitat data.txt\n");
-            return;
-        }
-        if (sscanf(dataLine, "%d %d %d %lf",
-                   &dataList.Hodnota_ID,
-                   &dataList.Hodnota_Zn,
-                   &dataList.Hodnota_1,
-                   &dataList.Hodnota_2) != 4)
-        {
-            free(newNode);
-            printf("M: Nespravny format v data.txt\n");
+            printf("M: Nepodarilo sa nacitat z jedneho zo suborou\n");
             return;
         }
 
-        // Read from parse file
-        if (fgets(parseLine, sizeof(parseLine), *parseFile) == NULL)
+        //?? parsing here actually works but need to figure out pointers and shid
+        sscanf(dataLine, "%d %d %d %lf",
+               &dataList.Hodnota_ID,
+               &dataList.Hodnota_Zn,
+               &dataList.Hodnota_1,
+               &dataList.Hodnota_2);
+
+        //! do the parsing right later
+
+        // poznamka_ID = chars from zero to first #
+        sscanf(parseLine, "%[^#]s", parseList.Poznamka_ID);
+
+        // poznamka_N1 = chars between first and second #
+        char *firstHash = strchr(parseLine, '#');
+        if (firstHash)
         {
-            free(newNode);
-            printf("M: Nepodarilo sa nacitat parse.txt\n");
-            return;
+            char *secondHash = strchr(firstHash + 1, '#');
+            if (secondHash)
+            {
+                *secondHash = '\0';
+                parseList.Poznamka_N1 = atoi(firstHash + 1);
+            }
         }
-        if (sscanf(parseLine, "%d %d %d %d",
-                   &parseList.Poznamka_N1,
-                   &parseList.Poznamka_Hodina,
-                   &parseList.Poznamka_Minuta,
-                   &parseList.Poznamka_T) != 4)
-        {
-            // free(newNode);
-            // printf("M: Nespravny format v parse.txt\n");
-            // return;
-        }
+
+        sscanf(parseLine, "%d %d %d %d",
+               &parseList.Poznamka_N1,
+               &parseList.Poznamka_Hodina,
+               &parseList.Poznamka_Minuta,
+               &parseList.Poznamka_T);
 
         //* Create a new node for linked list
         newNode->dataList = dataList;
@@ -417,24 +425,16 @@ void m(FILE **dataFile, FILE **parseFile, struct linkedList **head, int *lines, 
 int main()
 {
     FILE *dataFile, *stringFile, *parseFile;
-    bool opened = false;
+    bool opened, linkedListed, nActivated, exit = false;
 
-    bool linkedListed = false;
     struct linkedList *head = NULL;
 
-    bool nActivated = false;
-    int lines = 0;
-    char **dataFileArr;
-    char **stringFileArr;
-    char **parseFileArr;
+    int lines, i = 0;
+    char **dataFileArr, **stringFileArr, **parseFileArr;
 
     char input;
-    int inputNum;
-    int qNum;
+    int inputNum, qNum;
     char idToDelete[100];
-
-    bool exit = false;
-    int i = 0;
     char findMe[100];
 
     while (exit == false)
