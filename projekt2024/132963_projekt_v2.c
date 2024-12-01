@@ -386,11 +386,10 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             return;
         }
 
-        // read from Files
         fgets(dataLine, sizeof(dataLine), *dataFile);
         fgets(parseLine, sizeof(parseLine), *parseFile);
         fgets(string_txt, sizeof(string_txt), *stringFile);
-        // remove newline from string_txt
+
         string_txt[strcspn(string_txt, "\n")] = '\0';
 
         if (dataLine == NULL || parseLine == NULL || string_txt == NULL)
@@ -411,8 +410,14 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
         // Get Poznamka_ID (before first #)
         token = strtok(tempLine, "#");
-        if (token)
+        if (token && strlen(token) > 0)
+        {
             strcpy(parseList.Poznamka_ID, token);
+        }
+        else
+        {
+            strcpy(parseList.Poznamka_ID, "");
+        }
 
         // Get Poznamka_N1 (between first and second #)
         token = strtok(NULL, "#");
@@ -426,8 +431,14 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
         // Get Poznamka_T (between third and fourth #)
         token = strtok(NULL, "#");
-        if (token)
+        if (token && strlen(token) > 0)
+        {
             strcpy(parseList.Poznamka_T, token);
+        }
+        else
+        {
+            strcpy(parseList.Poznamka_T, "");
+        }
 
         //* Create a new node for linked list
         newNode->dataList = dataList;
