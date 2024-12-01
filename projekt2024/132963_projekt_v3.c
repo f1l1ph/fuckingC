@@ -133,20 +133,14 @@ void V3(struct linkedList **head, int *nodes)
 
     while (temp != NULL && i < *nodes)
     {
-        if (temp->string_txt != NULL && temp->parseList.Poznamka_ID != NULL && temp->parseList.Poznamka_T != NULL)
-        {
-            printf("ID. mer. modulu: %s \n", temp->string_txt);
-            printf("Hodnota 1: %d \n", temp->dataList.Hodnota_1);
-            printf("Hodnota 2: %g \n", temp->dataList.Hodnota_2);
-            printf("Poznámka ID: %s \n", (temp->parseList.Poznamka_ID[0] == '\0' || temp->parseList.Poznamka_ID[0] == '\n') ? "NaN" : temp->parseList.Poznamka_ID);
-            printf("Poznamka C: %d : %d => %g \n", temp->parseList.Poznamka_Hodina, temp->parseList.Poznamka_Minuta, temp->parseList.Poznamka_N1);
-            printf("Poznamka T: %s \n", (temp->parseList.Poznamka_T[0] == '\0' || temp->parseList.Poznamka_T[0] == '\n') ? "NaN" : temp->parseList.Poznamka_T);
-            printf("\n");
-        }
-        else
-        {
-            printf("V3: Corrupted data in node %d\n", i);
-        }
+
+        printf("ID. mer. modulu: %s \n", temp->string_txt);
+        printf("Hodnota 1: %d \n", temp->dataList.Hodnota_1);
+        printf("Hodnota 2: %g \n", temp->dataList.Hodnota_2);
+        printf("Poznámka ID: %s \n", (temp->parseList.Poznamka_ID[0] == '\0' || temp->parseList.Poznamka_ID[0] == '\n') ? "NaN" : temp->parseList.Poznamka_ID);
+        printf("Poznamka C: %d : %d => %g \n", temp->parseList.Poznamka_Hodina, temp->parseList.Poznamka_Minuta, temp->parseList.Poznamka_N1);
+        printf("Poznamka T: %s \n", (temp->parseList.Poznamka_T[0] == '\0' || temp->parseList.Poznamka_T[0] == '\n') ? "NaN" : temp->parseList.Poznamka_T);
+        printf("\n");
 
         temp = temp->next;
         i++;
@@ -190,9 +184,9 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
 
     Y = Y - 1;
 
-    scanf("%s", s1);                       // string.txt
-    scanf("%d %d %d %lf", &a, &b, &c, &d); // data.txt
-    scanf(" %[^\n]", s2);                  // parse.txt
+    scanf("%s", s1);
+    scanf("%d %d %d %lf", &a, &b, &c, &d);
+    scanf(" %[^\n]", s2);
 
     if (Y > *lines)
     {
@@ -204,20 +198,18 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
         (*stringFileArr)[*lines - 1] = (char *)malloc(100 * sizeof(char));
         (*parseFileArr)[*lines - 1] = (char *)malloc(100 * sizeof(char));
 
-        sprintf((*dataFileArr)[*lines - 1], "%d %d %d %lf", a, b, c, d);
+        sprintf((*dataFileArr)[*lines - 1], "%d %d %d %f", a, b, c, d);
         sprintf((*stringFileArr)[*lines - 1], "%s", s1);
         sprintf((*parseFileArr)[*lines - 1], "%s", s2);
 
         return;
     }
 
-    // add an item to the center of the array
     *dataFileArr = (char **)realloc(*dataFileArr, (*lines + 1) * sizeof(char *));
     *stringFileArr = (char **)realloc(*stringFileArr, (*lines + 1) * sizeof(char *));
     *parseFileArr = (char **)realloc(*parseFileArr, (*lines + 1) * sizeof(char *));
     for (i1 = *lines; i1 >= Y; i1--)
     {
-        // move the items to the right
         if (i1 <= 0)
         {
             break;
@@ -229,7 +221,7 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
         (*parseFileArr)[i1] = (char *)malloc(100 * sizeof(char));
         sprintf((*parseFileArr)[i1], "%s", (*parseFileArr)[i1 - 1]);
     }
-    // insert the new item
+
     (*dataFileArr)[Y] = (char *)malloc(100 * sizeof(char));
     sprintf((*dataFileArr)[Y], "%d %d %d %lf", a, b, c, d);
     (*stringFileArr)[Y] = (char *)malloc(100 * sizeof(char));
@@ -243,15 +235,17 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
 void w(char ToDelete[], char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *lines)
 {
     int deleted = 0;
+    int i = 0;
+    int j = 0;
 
-    for (int i = 0; i < *lines; i++)
+    for (i = 0; i < *lines; i++)
     {
         if (strcmp((*stringFileArr)[i], ToDelete) == 0)
         {
             free((*dataFileArr)[i]);
             free((*stringFileArr)[i]);
             free((*parseFileArr)[i]);
-            for (int j = i; j < *lines - 1; j++)
+            for (j = i; j < *lines - 1; j++)
             {
                 (*dataFileArr)[j] = (*dataFileArr)[j + 1];
                 (*stringFileArr)[j] = (*stringFileArr)[j + 1];
@@ -267,7 +261,8 @@ void w(char ToDelete[], char ***dataFileArr, char ***stringFileArr, char ***pars
 
 void e(char findMe[], char ***parseFileArr, int *lines)
 {
-    for (int i = 0; i < *lines; i++)
+    int i = 0;
+    for (i = 0; i < *lines; i++)
     {
         if (strstr((*parseFileArr)[i], findMe) != NULL)
         {
@@ -393,13 +388,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
         string_txt[strcspn(string_txt, "\n")] = '\0';
 
-        if (dataLine == NULL || parseLine == NULL || string_txt == NULL)
-        {
-            free(newNode);
-            printf("M: Nepodarilo sa nacitat z jedneho zo suborou\n");
-            return;
-        }
-
         sscanf(dataLine, "%d %d %d %lf",
                &dataList.Hodnota_ID,
                &dataList.Hodnota_Zn,
@@ -486,6 +474,9 @@ void a(struct linkedList **head, int *nodes)
     char *token;
     char tempLine[100];
 
+    int i = 0;
+    int currentId;
+
     scanf("%d", &Y);
     Y = Y - 1;
 
@@ -546,7 +537,7 @@ void a(struct linkedList **head, int *nodes)
     else
     {
         temp = *head;
-        for (int i = 0; i < Y - 1 && temp != NULL; i++)
+        for (i = 0; i < Y - 1 && temp != NULL; i++)
         {
             temp = temp->next;
         }
@@ -557,7 +548,7 @@ void a(struct linkedList **head, int *nodes)
             temp->next = newNode;
 
             struct linkedList *current = newNode->next;
-            int currentId = newNode->id + 1;
+            currentId = newNode->id + 1;
             while (current != NULL)
             {
                 current->id = currentId++;
