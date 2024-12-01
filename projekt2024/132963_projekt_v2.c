@@ -138,7 +138,7 @@ void V3(struct linkedList **head, int *nodes)
             printf("ID. mer. modulu: %s \n", temp->string_txt);
             printf("Hodnota 1: %d \n", temp->dataList.Hodnota_1);
             printf("Hodnota 2: %g \n", temp->dataList.Hodnota_2);
-            printf("PoznámkaId: %s \n", (temp->parseList.Poznamka_ID[0] == '\0' || temp->parseList.Poznamka_ID[0] == '\n') ? "NaN" : temp->parseList.Poznamka_ID);
+            printf("Poznámka ID: %s \n", (temp->parseList.Poznamka_ID[0] == '\0' || temp->parseList.Poznamka_ID[0] == '\n') ? "NaN" : temp->parseList.Poznamka_ID);
             printf("Poznamka C: %d : %d => %g \n", temp->parseList.Poznamka_Hodina, temp->parseList.Poznamka_Minuta, temp->parseList.Poznamka_N1);
             printf("Poznamka T: %s \n", (temp->parseList.Poznamka_T[0] == '\0' || temp->parseList.Poznamka_T[0] == '\n') ? "NaN" : temp->parseList.Poznamka_T);
             printf("\n");
@@ -400,7 +400,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             return;
         }
 
-        //?? parsing here actually works but need to figure out pointers and shid
         sscanf(dataLine, "%d %d %d %lf",
                &dataList.Hodnota_ID,
                &dataList.Hodnota_Zn,
@@ -409,7 +408,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
         strcpy(tempLine, parseLine);
 
-        // Get Poznamka_ID (before first #)
         token = strtok(tempLine, "#");
         if (token && strlen(token) > 0)
         {
@@ -420,7 +418,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             strcpy(parseList.Poznamka_ID, "");
         }
 
-        // Get Poznamka_N1 (between first and second #)
         token = strtok(NULL, "#");
         if (token)
         {
@@ -431,7 +428,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             parseList.Poznamka_N1 = -1;
         }
 
-        // Get time (between second and third #)
         token = strtok(NULL, "#");
         if (token)
         {
@@ -443,7 +439,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             parseList.Poznamka_Minuta = -1;
         }
 
-        // Get Poznamka_T (between third and fourth #)
         token = strtok(NULL, "#");
         if (token && strlen(token) > 0)
         {
@@ -454,7 +449,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
             strcpy(parseList.Poznamka_T, "");
         }
 
-        //* Create a new node for linked list
         newNode->dataList = dataList;
         newNode->parseList = parseList;
         strcpy(newNode->string_txt, string_txt);
@@ -515,43 +509,35 @@ void a(struct linkedList **head, int *nodes)
         return;
     }
 
-    scanf("%s", newNode->string_txt); // string.txt
-    scanf("%d %d %d %lf",             // data.txt
+    scanf("%s", newNode->string_txt);
+    scanf("%d %d %d %lf",
           &newNode->dataList.Hodnota_ID,
           &newNode->dataList.Hodnota_Zn,
           &newNode->dataList.Hodnota_1,
           &newNode->dataList.Hodnota_2);
-    scanf(" %[^\n]", parseLine); // parse.txt
-
-    // Parse parse.txt content
-
+    scanf(" %[^\n]", parseLine);
     strcpy(tempLine, parseLine);
 
-    // Get Poznamka_ID (before first #)
     token = strtok(tempLine, "#");
     if (token)
         strcpy(newNode->parseList.Poznamka_ID, token);
 
-    // Get Poznamka_N1 (between first and second #)
     token = strtok(NULL, "#");
     if (token)
         newNode->parseList.Poznamka_N1 = atof(token);
 
-    // Get time (between second and third #)
     token = strtok(NULL, "#");
     if (token)
         sscanf(token, "%2d%2d",
                &newNode->parseList.Poznamka_Hodina,
                &newNode->parseList.Poznamka_Minuta);
 
-    // Get Poznamka_T (after third #)
     token = strtok(NULL, "#");
     if (token)
         strcpy(newNode->parseList.Poznamka_T, token);
 
     newNode->id = amountOfNodes + 1;
 
-    // Insert node at position Y
     if (Y == 0)
     {
         newNode->next = *head;
@@ -559,8 +545,7 @@ void a(struct linkedList **head, int *nodes)
     }
     else
     {
-        temp = *head; // Reset temp to head
-        // Find position Y-1
+        temp = *head;
         for (int i = 0; i < Y - 1 && temp != NULL; i++)
         {
             temp = temp->next;
@@ -568,11 +553,9 @@ void a(struct linkedList **head, int *nodes)
 
         if (temp != NULL)
         {
-            // Insert new node
             newNode->next = temp->next;
             temp->next = newNode;
 
-            // Update IDs for all nodes after insertion
             struct linkedList *current = newNode->next;
             int currentId = newNode->id + 1;
             while (current != NULL)
@@ -583,7 +566,6 @@ void a(struct linkedList **head, int *nodes)
         }
         else
         {
-            // If position not found, add to end
             temp = *head;
             while (temp->next != NULL)
             {
