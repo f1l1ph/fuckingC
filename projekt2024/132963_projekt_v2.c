@@ -139,9 +139,9 @@ void V3(struct linkedList **head, int *nodes)
             printf("ID. mer. modulu: %s \n", temp->string_txt);
             printf("Hodnota 1: %d \n", temp->dataList.Hodnota_1);
             printf("Hodnota 2: %g \n", temp->dataList.Hodnota_2);
-            printf("PoznámkaId: %s \n", temp->parseList.Poznamka_ID);
+            printf("PoznámkaId: %s \n", (temp->parseList.Poznamka_ID[0] == '\0' || temp->parseList.Poznamka_ID[0] == '\n') ? "NaN" : temp->parseList.Poznamka_ID);
             printf("Poznamka C: %d : %d => %g \n", temp->parseList.Poznamka_Hodina, temp->parseList.Poznamka_Minuta, temp->parseList.Poznamka_N1);
-            printf("Poznamka T: %s \n", temp->parseList.Poznamka_T);
+            printf("Poznamka T: %s \n", (temp->parseList.Poznamka_T[0] == '\0' || temp->parseList.Poznamka_T[0] == '\n') ? "NaN" : temp->parseList.Poznamka_T);
             printf("\n");
         }
         else
@@ -300,19 +300,17 @@ void h(FILE **stringFile)
 
     while ((c = fgetc(*stringFile)) != EOF)
     {
-        switch (c)
+        if (c >= 'a' && c <= 'z')
         {
-        case 'a' ... 'z':
             malePismenaCount[c - 'a']++;
-            break;
-        case 'A' ... 'Z':
+        }
+        else if (c >= 'A' && c <= 'Z')
+        {
             velkePismenaCount[c - 'A']++;
-            break;
-        case '0' ... '9':
+        }
+        else if (c >= '0' && c <= '9')
+        {
             cislaCount[c - '0']++;
-            break;
-        default:
-            break;
         }
     }
     for (i = 0; i < 26; i++)
@@ -355,7 +353,13 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
     char dataLine[100];
     char parseLine[100];
+
+    char *token;
+    char tempLine[100];
+
     setLines(dataFile, lines);
+
+    temp = *head;
 
     rewind(*dataFile);
     rewind(*parseFile);
@@ -373,6 +377,7 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
         memset(dataLine, 0, sizeof(dataLine));
         memset(parseLine, 0, sizeof(parseLine));
         memset(string_txt, 0, sizeof(string_txt));
+        memset(tempLine, 0, sizeof(tempLine));
 
         newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
         if (newNode == NULL)
@@ -402,8 +407,6 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
                &dataList.Hodnota_1,
                &dataList.Hodnota_2);
 
-        char *token;
-        char tempLine[100];
         strcpy(tempLine, parseLine);
 
         // Get Poznamka_ID (before first #)
@@ -453,13 +456,16 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
 
 void a(struct linkedList **head, int *nodes)
 {
-    // add a new node to the Yth position
     int Y;
     int amountOfNodes = 0;
     struct linkedList *temp = *head;
 
-    char stringLine[100];
     char parseLine[100];
+
+    struct linkedList *newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
+
+    char *token;
+    char tempLine[100];
 
     scanf("%d", &Y);
     Y = Y - 1;
@@ -478,7 +484,6 @@ void a(struct linkedList **head, int *nodes)
         Y = amountOfNodes;
     }
     *nodes += 1;
-    struct linkedList *newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
     if (newNode == NULL)
     {
         printf("A: Nepodarilo sa alokovat pamat\n");
@@ -494,8 +499,7 @@ void a(struct linkedList **head, int *nodes)
     scanf(" %[^\n]", parseLine); // parse.txt
 
     // Parse parse.txt content
-    char *token;
-    char tempLine[100];
+
     strcpy(tempLine, parseLine);
 
     // Get Poznamka_ID (before first #)
@@ -567,18 +571,18 @@ void a(struct linkedList **head, int *nodes)
 
 void s(struct linkedList **head, int *nodes)
 {
-    // get Id. mer. modulu as input
-    // delete node with that id
-    // set next to next, skip the deleted node
-    // id.mer.modulu is in string.txt
     char idToDelete[10];
-    scanf("%s", idToDelete);
 
-    struct linkedList *temp = *head;
-    struct linkedList *prev = NULL;
+    struct linkedList *temp;
+    struct linkedList *prev;
 
-    int deleted = 0;
-    // go through the linked list and find the node with the id
+    int deleted;
+
+    scanf("%s", &idToDelete[0]);
+
+    deleted = 0;
+    temp = *head;
+    prev = NULL;
     while (temp != NULL)
     {
         if (strcmp(temp->string_txt, idToDelete) == 0)
@@ -586,12 +590,12 @@ void s(struct linkedList **head, int *nodes)
             struct linkedList *toDelete = temp;
             if (prev == NULL)
             {
-                *head = temp->next; // Update head if first node is deleted
+                *head = temp->next;
                 temp = *head;
             }
             else
             {
-                prev->next = temp->next; // Skip the deleted node
+                prev->next = temp->next;
                 temp = temp->next;
             }
             free(toDelete);
@@ -605,18 +609,23 @@ void s(struct linkedList **head, int *nodes)
     printf("S: Vymazalo sa %d zaznamov\n", deleted);
 }
 
-//? swap
-void d(struct linkedList **head, int *nodes)
+void d(struct linkedList **head)
 {
-    // get ids of 2 nodes from user input
     int id1, id2;
     scanf("%d %d", &id1, &id2);
 
-    struct linkedList *node1 = NULL;
-    struct linkedList *node2 = NULL;
-    struct linkedList *temp = *head;
+    struct linkedList *node1;
+    struct linkedList *node2;
+    struct linkedList *temp;
 
-    // find the nodes with given IDs
+    struct data tempData;
+    struct parse tempParse;
+    char tempString[10];
+
+    node1 = NULL;
+    node2 = NULL;
+    temp = *head;
+
     while (temp != NULL)
     {
         if (temp->id == id1)
@@ -626,7 +635,6 @@ void d(struct linkedList **head, int *nodes)
         temp = temp->next;
     }
 
-    // if either node not found, return
     if (node1 == NULL || node2 == NULL)
     {
         printf("D: Jeden alebo viac ID neexistuje\n");
@@ -637,21 +645,20 @@ void d(struct linkedList **head, int *nodes)
         return;
     }
 
-    // swap the data between nodes
-    struct data tempData = node1->dataList;
-    struct parse tempParse = node1->parseList;
-    char tempString[10];
-    strcpy(tempString, node1->string_txt);
+    memset(&tempData, 0, sizeof(struct data));
+    memset(&tempParse, 0, sizeof(struct parse));
 
+    tempData = node1->dataList;
+    tempParse = node1->parseList;
+
+    strcpy(tempString, node1->string_txt);
     node1->dataList = node2->dataList;
     node1->parseList = node2->parseList;
-    strcpy(node1->string_txt, node2->string_txt);
 
+    strcpy(node1->string_txt, node2->string_txt);
     node2->dataList = tempData;
     node2->parseList = tempParse;
     strcpy(node2->string_txt, tempString);
-
-    printf("Dded\n");
 }
 
 void k(struct linkedList **head, int *nodes)
@@ -853,7 +860,7 @@ int main()
                 printf("D: Nevytvoreny linked list\n");
                 continue;
             }
-            d(&head, &nodes);
+            d(&head);
         }
         else
         {
