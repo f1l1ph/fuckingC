@@ -223,7 +223,7 @@ void q(int Y, char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, 
     }
 
     (*dataFileArr)[Y] = (char *)malloc(100 * sizeof(char));
-    sprintf((*dataFileArr)[Y], "%d %d %d %lf", a, b, c, d);
+    sprintf((*dataFileArr)[Y], "%d %d %d %f", a, b, c, d);
     (*stringFileArr)[Y] = (char *)malloc(100 * sizeof(char));
     sprintf((*stringFileArr)[Y], "%s\n", s1);
     (*parseFileArr)[Y] = (char *)malloc(100 * sizeof(char));
@@ -477,6 +477,8 @@ void a(struct linkedList **head, int *nodes)
     int i = 0;
     int currentId;
 
+    struct linkedList *current;
+
     scanf("%d", &Y);
     Y = Y - 1;
 
@@ -547,7 +549,7 @@ void a(struct linkedList **head, int *nodes)
             newNode->next = temp->next;
             temp->next = newNode;
 
-            struct linkedList *current = newNode->next;
+            current = newNode->next;
             currentId = newNode->id + 1;
             while (current != NULL)
             {
@@ -610,7 +612,6 @@ void s(struct linkedList **head, int *nodes)
 void d(struct linkedList **head)
 {
     int id1, id2;
-    scanf("%d %d", &id1, &id2);
 
     struct linkedList *node1;
     struct linkedList *node2;
@@ -619,6 +620,8 @@ void d(struct linkedList **head)
     struct data tempData;
     struct parse tempParse;
     char tempString[10];
+
+    scanf("%d %d", &id1, &id2);
 
     node1 = NULL;
     node2 = NULL;
