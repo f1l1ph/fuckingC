@@ -120,7 +120,6 @@ void V2(char ***dataFileArr, char ***stringFileArr, char ***parseFileArr, int *l
     }
 }
 
-// TODO: put Nan when empty on PoznamkaId and PoznamkaT
 void V3(struct linkedList **head, int *nodes)
 {
     struct linkedList *temp = *head;
@@ -379,6 +378,8 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
         memset(string_txt, 0, sizeof(string_txt));
         memset(tempLine, 0, sizeof(tempLine));
 
+        token = NULL;
+
         newNode = (struct linkedList *)malloc(sizeof(struct linkedList));
         if (newNode == NULL)
         {
@@ -422,12 +423,25 @@ void m(FILE **dataFile, FILE **parseFile, FILE **stringFile, struct linkedList *
         // Get Poznamka_N1 (between first and second #)
         token = strtok(NULL, "#");
         if (token)
+        {
             parseList.Poznamka_N1 = atof(token);
+        }
+        else
+        {
+            parseList.Poznamka_N1 = -1;
+        }
 
         // Get time (between second and third #)
         token = strtok(NULL, "#");
         if (token)
+        {
             sscanf(token, "%2d%2d", &parseList.Poznamka_Hodina, &parseList.Poznamka_Minuta);
+        }
+        else
+        {
+            parseList.Poznamka_Hodina = -1;
+            parseList.Poznamka_Minuta = -1;
+        }
 
         // Get Poznamka_T (between third and fourth #)
         token = strtok(NULL, "#");
