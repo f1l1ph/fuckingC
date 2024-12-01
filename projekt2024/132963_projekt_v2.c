@@ -605,6 +605,7 @@ void s(struct linkedList **head, int *nodes)
     printf("S: Vymazalo sa %d zaznamov\n", deleted);
 }
 
+//? swap
 void d(struct linkedList **head, int *nodes)
 {
     // get ids of 2 nodes from user input
@@ -655,7 +656,6 @@ void d(struct linkedList **head, int *nodes)
 
 void k(struct linkedList **head, int *nodes)
 {
-    // delete all nodes
     struct linkedList *temp = *head;
     struct linkedList *toDelete = NULL;
     int deleted = 0;
@@ -675,7 +675,7 @@ void k(struct linkedList **head, int *nodes)
 int main()
 {
     FILE *dataFile, *stringFile, *parseFile;
-    bool opened = false, linkedListed = false, nActivated = false, exit = false;
+    bool opened = false, linkedListed = false, nActivated = false;
 
     struct linkedList *head = NULL;
 
@@ -687,7 +687,7 @@ int main()
     char idToDelete[100];
     char findMe[100];
 
-    while (exit == false)
+    while (true)
     {
         scanf("%c", &input);
 
@@ -786,11 +786,6 @@ int main()
             scanf("%s", findMe);
             e(findMe, &parseFileArr, &lines);
         }
-        else if (input == 'x' || input == 'X') /*@Note: I added this so you can exit the program*/
-        {
-            exit = true;
-            printf("Koniec programu\n");
-        }
         else if (input == 'k' || input == 'K')
         {
             if (!opened)
@@ -815,6 +810,11 @@ int main()
                 free(parseFileArr);
                 nActivated = false;
                 lines = 0;
+            }
+            if (linkedListed)
+            {
+                k(&head, &nodes);
+                linkedListed = false;
             }
             return 0;
         }
@@ -860,7 +860,4 @@ int main()
             printf("Nespravna volba vypisu\n");
         }
     }
-    fclose(dataFile);
-    fclose(stringFile);
-    fclose(parseFile);
 }
