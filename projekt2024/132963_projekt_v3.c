@@ -798,7 +798,6 @@ int main()
         {
             if (!opened)
             {
-                // printf("K: Neotvoreny subor.\n");
                 continue;
             }
             fclose(dataFile);

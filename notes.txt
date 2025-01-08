@@ -1,0 +1,5 @@
+count += x & 1; // Skontroluje, či je posledný bit 1
+x >>= 1;        // Posunie bity doprava (x = x / 2)
+
+-- dynamicly allocated array of 5 ints
+int pole = (int *)malloc(5 * sizeof(int));
